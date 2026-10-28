@@ -1,8 +1,8 @@
-
 import doctest
+import sys
 
 
-def reverse_words(text):
+def reverse_words(src_text: str) -> str:
     """
     >>> reverse_words("abcd")
     'dcba'
@@ -14,51 +14,66 @@ def reverse_words(text):
     'd1cba hgf!e'
     >>> reverse_words(123)
     Traceback (most recent call last):
-    ...
-    TypeError: Аргумент має бути рядком.
+        ...
+    TypeError: Переданий аргумент повинен бути строкою (str).
     """
-    if not isinstance(text, str):
-        raise TypeError("Аргумент має бути рядком.")
+    if not isinstance(src_text, str):
+        raise TypeError("Переданий аргумент повинен бути строкою (str).")
 
-    if not text.isascii():
-        raise ValueError("Дозволені тільки ASCII символи.")
+    if not src_text.isascii():
+        raise ValueError("Текст повинен містити тільки ASCII символи.")
 
-    chars = list(text)
-    start = 0
+    def reverse_token(token: str) -> str:
+        letters_stack = [ch for ch in token if ch.isalpha()]
+        formatted_chars = []
 
-    while start < len(chars):
-        if chars[start].isspace():
-            start += 1
-            continue
+        for ch in token:
+            if ch.isalpha():
+                formatted_chars.append(letters_stack.pop())
+            else:
+                formatted_chars.append(ch)
 
-        end = start
-        while end < len(chars) and not chars[end].isspace():
-            end += 1
+        return "".join(formatted_chars)
 
-        positions = []
-        letters = []
+    tokens = src_text.split(" ")
+    processed_tokens = [reverse_token(item) for item in tokens]
 
-        for i in range(start, end):
-            if chars[i].isalpha():
-                positions.append(i)
-                letters.append(chars[i])
+    return " ".join(processed_tokens)
 
-        letters.reverse()
 
-        for i, letter in zip(positions, letters):
-            chars[i] = letter
+def start_cli():
+    print("Введіть 'exit' або 'quit' для виходу.\n")
 
-        start = end
+    while True:
+        try:
+            raw_input = input("Введіть текст: ")
 
-    return "".join(chars)
+            if raw_input.strip().lower() in ("exit", "quit"):
+                print("Завершення роботи.")
+                break
+
+            output = reverse_words(raw_input)
+            print(f"Результат: {output}\n")
+
+        except ValueError as val_err:
+            print(f"Помилка введення: {val_err}\n")
+        except KeyboardInterrupt:
+            print("\nПрограму примусово завершено.")
+            break
+        except Exception as err:
+            print(f"Виникла непередбачена помилка: {err}\n")
 
 
 if __name__ == "__main__":
-    doctest.testmod(verbose=True)
-
-    text = input("Enter text: ")
-
-    try:
-        print("Result:", reverse_words(text))
-    except (TypeError, ValueError) as error:
-        print("Error:", error)
+    if len(sys.argv) > 1 and sys.argv[1] == "--test":
+        print("Запуск doctest...")
+        failed_cnt, total_cnt = doctest.testmod()
+        print(
+            f"Тестування завершено: {total_cnt - failed_cnt}/{total_cnt} тестів пройдено успішно."
+        )
+    else:
+        failed_cnt, _ = doctest.testmod()
+        if failed_cnt == 0:
+            start_cli()
+        else:
+            print("Виявлено помилки у функціоналі! Запуск зупинено.")
