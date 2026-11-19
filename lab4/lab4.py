@@ -1,3 +1,4 @@
+
 import re
 import sys
 
@@ -8,9 +9,7 @@ def calculate_traffic(file_path):
     sent_bytes = 0
     received_request_bytes = 0
 
-    with open(file_path, "r", encoding="utf-8") as file:
-        # Файл читається поступово, рядок за рядком.
-        # Генератор не зберігає всі рядки в пам'яті.
+    with open(file_path, "r", encoding="utf-8-sig") as file:
         lines = (line for line in file)
 
         for line in lines:
@@ -27,13 +26,19 @@ def calculate_traffic(file_path):
 
 
 def main():
-    file_path = sys.argv[1] if len(sys.argv) > 1 else "nginx.log"
+    file_path = sys.argv[1] if len(sys.argv) > 1 else "2017_05_07_nginx.txt"
 
     try:
         sent, received = calculate_traffic(file_path)
+
+        print("Результати аналізу Nginx-логу:")
         print(f"Надіслано сервером: {sent:,} байт")
         print(f"Отримано (рядки запитів): {received:,} байт")
-        print("Примітка: лог не містить розміру всіх вхідних HTTP-заголовків і тіл запитів.")
+
+        print("\nПримітка:")
+        print("Лог не містить повного розміру вхідних HTTP-запитів.")
+        print("Підраховано лише розмір рядків запитів.")
+
     except FileNotFoundError:
         print(f"Файл не знайдено: {file_path}")
 
