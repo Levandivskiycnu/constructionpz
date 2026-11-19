@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bracket-validator-andrii"
+version = "1.0.0"
+description = "A simple validator for (), {}, and <> brackets"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{name = "Student"}]
+
+[tool.setuptools.packages.find]
+where = ["src"]
